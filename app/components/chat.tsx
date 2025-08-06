@@ -22,30 +22,46 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userInput.trim()) return;
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!userInput.trim()) return;
 
-    // Add user message
-    setMessages((prev) => [...prev, { role: 'user', text: userInput }]);
-    setUserInput('');
-    setInputDisabled(true);
+  // Add user message to UI
+  setMessages((prev) => [...prev, { role: 'user', text: userInput }]);
+  setUserInput('');
+  setInputDisabled(true);
 
-    // Send message to your assistant API
-    try {
-      const res = await fetch('/api/assistants/threads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: userInput }),
-      });
-      const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', text: data.reply || 'Sorry, I couldn’t find an answer.' }]);
-    } catch (err) {
-      setMessages((prev) => [...prev, { role: 'assistant', text: 'Error: Unable to reach the assistant.' }]);
-    }
+  try {
+    // 1. Create a new thread
+    const threadRes = await fetch('/api/assistants/threads', {
+      method: 'POST',
+    });
+    const threadData = await threadRes.json();
+    const threadId = threadData.threadId;
 
-    setInputDisabled(false);
-  };
+    // 2. Send the message to the assistant
+    const messageRes = await fetch(`/api/assistants/threads/${threadId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: userInput }),
+    });
+
+    const messageData = await messageRes.json();
+
+    setMessages((prev) => [
+      ...prev,
+      { role: 'assistant', text: messageData.reply || 'Sorry, I couldn’t find an answer.' },
+    ]);
+  } catch (err) {
+    setMessages((prev) => [
+      ...prev,
+      { role: 'assistant', text: 'Error: Unable to reach the assistant.' },
+    ]);
+  }
+
+  setInputDisabled(false);
+};
+
 
   return (
     <>
