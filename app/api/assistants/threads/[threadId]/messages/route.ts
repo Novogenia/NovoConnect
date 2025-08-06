@@ -36,5 +36,8 @@ export async function POST(request, { params: { threadId } }) {
   const messages = await openai.beta.threads.messages.list(threadId);
   const last = messages.data.find((msg) => msg.role === "assistant");
 
-  return Response.json({ reply: last?.content?.[0]?.text?.value || "No reply." });
-}
+const textContent = last?.content.find(
+  (c) => c.type === "text"
+) as { type: "text"; text: { value: string } };
+
+return Response.json({ reply: textContent?.text?.value || "No reply." });
