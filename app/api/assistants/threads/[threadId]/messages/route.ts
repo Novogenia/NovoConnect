@@ -3,7 +3,6 @@ import { openai } from "@/app/openai";
 
 export const runtime = "nodejs";
 
-// Send a message to a thread and return the assistant's reply
 export async function POST(request, { params: { threadId } }) {
   const { content } = await request.json();
 
@@ -29,15 +28,16 @@ export async function POST(request, { params: { threadId } }) {
     if (status.status === "failed" || status.status === "cancelled") {
       return Response.json({ reply: "The assistant failed to respond." });
     }
-    await new Promise((r) => setTimeout(r, 1000)); // wait 1s before polling again
+    await new Promise((r) => setTimeout(r, 1000));
   }
 
-  // 4. Get the assistant message
+  // 4. Retrieve the assistant message
   const messages = await openai.beta.threads.messages.list(threadId);
   const last = messages.data.find((msg) => msg.role === "assistant");
 
-const textContent = last?.content.find(
-  (c) => c.type === "text"
-) as { type: "text"; text: { value: string } };
+  const textContent = last?.content.find(
+    (c) => c.type === "text"
+  ) as { type: "text"; text: { value: string } };
 
-return Response.json({ reply: textContent?.text?.value || "No reply." });
+  return Response.json({ reply: textContent?.text?.value || "No reply." });
+}
