@@ -2,9 +2,10 @@
   background: white;
   border-radius: 20px;
   padding: 20px;
-  max-width: 800px;
-  margin: 80px auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1200px;
+  margin: 100px auto 40px auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .header {
@@ -24,6 +25,10 @@
   height: 40px;
 }
 
+body {
+  background-color: rgb(110, 0, 71);
+}
+
 .intro {
   margin-bottom: 20px;
   color: #444;
@@ -32,7 +37,7 @@
 }
 
 .messages {
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
   margin-bottom: 20px;
 }
