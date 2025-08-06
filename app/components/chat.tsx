@@ -26,31 +26,24 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   if (!userInput.trim()) return;
 
-  // Add user message to UI
+  // Add user message to UI immediately
   setMessages((prev) => [...prev, { role: 'user', text: userInput }]);
   setUserInput('');
   setInputDisabled(true);
 
   try {
-    // 1. Create a new thread
-    const threadRes = await fetch('/api/assistants/threads', {
-      method: 'POST',
-    });
-    const threadData = await threadRes.json();
-    const threadId = threadData.threadId;
-
-    // 2. Send the message to the assistant
-    const messageRes = await fetch(`/api/assistants/threads/${threadId}/messages`, {
+    // ✅ Use all-in-one backend route that handles: create thread + send message + run + respond
+    const res = await fetch('/api/assistants/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: userInput }),
     });
 
-    const messageData = await messageRes.json();
+    const data = await res.json();
 
     setMessages((prev) => [
       ...prev,
-      { role: 'assistant', text: messageData.reply || 'Sorry, I couldn’t find an answer.' },
+      { role: 'assistant', text: data.reply || 'Sorry, I couldn’t find an answer.' },
     ]);
   } catch (err) {
     setMessages((prev) => [
@@ -61,6 +54,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   setInputDisabled(false);
 };
+
 
 
   return (
