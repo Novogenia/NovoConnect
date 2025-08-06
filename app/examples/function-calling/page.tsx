@@ -38,7 +38,7 @@ const FunctionCalling = () => {
         </div>
         <div className={styles.chatContainer}>
           <div className={styles.chat}>
-            <Chat functionCallHandler={functionCallHandler} />
+            <Chat />
           </div>
         </div>
       </div>
